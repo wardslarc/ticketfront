@@ -26,7 +26,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-// Validation schema including new fields
+// Validation schema WITHOUT status
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters" }),
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -76,14 +76,16 @@ const TicketForm = ({ onSubmit }: TicketFormProps = {}) => {
         await new Promise((r) => setTimeout(r, 100));
       }
 
-      // Send POST request as application/x-www-form-urlencoded with no-cors
+      // Add status="new" automatically when sending data
+      const dataWithStatus = { ...data, status: "new" };
+
       await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
         mode: "no-cors", // important to avoid CORS errors
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: new URLSearchParams(data as any).toString(),
+        body: new URLSearchParams(dataWithStatus as any).toString(),
       });
 
       setSubmitStatus("success");
@@ -208,7 +210,7 @@ const TicketForm = ({ onSubmit }: TicketFormProps = {}) => {
             )}
           />
 
-          {/* New field: issueType */}
+          {/* Issue Type */}
           <FormField
             control={form.control}
             name="issueType"
@@ -223,7 +225,7 @@ const TicketForm = ({ onSubmit }: TicketFormProps = {}) => {
             )}
           />
 
-          {/* New field: company */}
+          {/* Company */}
           <FormField
             control={form.control}
             name="company"
